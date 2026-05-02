@@ -1,8 +1,7 @@
 import os
 import django
-from django.core.handlers.wsgi import WSGIHandler
+from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "recipeglobe_project.settings")
 django.setup()
-
-app = WSGIHandler()
+app = get_wsgi_application()

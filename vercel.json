@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "recipeglobe_project/wsgi.py",
+      "src": "vercel_app.py",
       "use": "@vercel/python"
     },
     {
@@ -12,13 +12,7 @@
     }
   ],
   "routes": [
-    {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "recipeglobe_project/wsgi.py"
-    }
+    { "src": "/static/(.*)", "dest": "/static/$1" },
+    { "src": "/(.*)", "dest": "vercel_app.py" }
   ]
 }
