@@ -36,7 +36,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'allauth.account.middleware.AccountMiddleware', 
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'recipeglobe_project.urls'
@@ -86,7 +86,6 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-# All Indian regional languages + English
 LANGUAGES = [
     ('en', 'English'),
     ('hi', 'हिन्दी (Hindi)'),
@@ -150,9 +149,6 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-SOCIALACCOUNT_LOGIN_ON_GET = True
-SOCIALACCOUNT_AUTO_SIGNUP = True
-
 EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
 EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
 EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
@@ -197,25 +193,7 @@ JAZZMIN_UI_TWEAKS = {
     "theme": "flatly",
 }
 
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # ← must be second
-    # ... rest of your middleware
-]
-
-# Add this — Vercel's filesystem is read-only, file-based sessions won't work
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
-
-# Vercel is stateless — cookies must work cross-request
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SAMESITE = 'Lax'
-
-import os
-
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '.vercel.app',        # covers all *.vercel.app domains including preview URLs
-    '.yourdomain.in',
-]
