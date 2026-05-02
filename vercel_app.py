@@ -1,15 +1,14 @@
 import os
 import sys
 
-# Add project root to path
+# Add the site-packages from uv's venv to the path
+sys.path.insert(0, '/var/task/.vercel/python/.venv/lib/python3.12/site-packages')
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "recipeglobe_project.settings")
 
-# Setup Django fully before getting the app
 import django
 django.setup()
 
-# Import and wrap the handler explicitly
 from django.core.handlers.wsgi import WSGIHandler
-app = WSGIHandler()# force redeploy
+app = WSGIHandler()
