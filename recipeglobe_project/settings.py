@@ -36,7 +36,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # allauth.account.middleware.AccountMiddleware removed — not compatible with Vercel vendor
+    #  allauth.account.middleware.AccountMiddleware removed — not compatible with Vercel vendor
 ]
 
 ROOT_URLCONF = 'recipeglobe_project.urls'
