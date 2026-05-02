@@ -64,13 +64,13 @@ WSGI_APPLICATION = 'recipeglobe_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME', default='postgres'),
-        'USER': config('DB_USER', default='postgres'),
-        'PASSWORD': config('DB_PASSWORD', default=''),
-        'HOST': config('DB_HOST', default='localhost'),
-        'PORT': config('DB_PORT', default='5432'),
-        'OPTIONS': {'sslmode': config('DB_SSLMODE', default='require')},
-        'DISABLE_SERVER_SIDE_CURSORS': True, 
+        'NAME': 'postgres',
+        'USER': 'postgres.erovkgvunyecdfolbjuj',
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': 'aws-1-ap-northeast-1.pooler.supabase.com',
+        'PORT': '6543',
+        'OPTIONS': {'sslmode': 'require'},
+        'DISABLE_SERVER_SIDE_CURSORS': True,
     }
 }
 
