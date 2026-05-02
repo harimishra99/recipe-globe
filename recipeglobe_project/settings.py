@@ -202,3 +202,11 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',  # ← must be second
     # ... rest of your middleware
 ]
+
+# Add this — Vercel's filesystem is read-only, file-based sessions won't work
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
+# Vercel is stateless — cookies must work cross-request
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = 'Lax'
