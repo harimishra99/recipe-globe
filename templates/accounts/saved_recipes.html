@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Saved Recipes — Swad{% endblock %}
+{% block content %}
+<div class="container" style="padding-top:calc(var(--nav-h) + 2rem);padding-bottom:4rem">
+  <div class="sec-head"><h1 class="section-title">📌 Saved Recipes</h1></div>
+  {% if saved %}
+  <div class="recipe-grid">
+    {% for s in saved %}{% include 'recipes/partials/recipe_card.html' with recipe=s.recipe %}{% endfor %}
+  </div>
+  {% else %}
+  <div class="empty"><span class="e-icon">📌</span><h3>Nothing saved yet</h3><p>Start exploring and save the recipes you love!</p><a href="{% url 'recipe_list' %}">Explore Recipes</a></div>
+  {% endif %}
+</div>
+{% endblock %}

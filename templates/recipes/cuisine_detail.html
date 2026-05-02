@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}{{ cuisine.name }} Cuisine — Swad{% endblock %}
+{% block content %}
+<div class="container" style="padding-top:calc(var(--nav-h) + 2rem);padding-bottom:4rem">
+  <div style="max-width:720px;margin-bottom:2.5rem">
+    <h1 style="font-family:var(--fd);font-size:2.5rem;margin-bottom:.75rem">{{ cuisine.name }} Cuisine</h1>
+    {% if cuisine.description %}<p style="font-size:1.05rem;line-height:1.8;color:var(--text-sub)">{{ cuisine.description }}</p>{% endif %}
+  </div>
+  {% if recipes %}
+  <div class="recipe-grid">
+    {% for recipe in recipes %}{% include 'recipes/partials/recipe_card.html' %}{% endfor %}
+  </div>
+  {% else %}
+  <div class="empty"><span class="e-icon">🍽️</span><h3>No recipes for this cuisine yet.</h3></div>
+  {% endif %}
+</div>
+{% endblock %}

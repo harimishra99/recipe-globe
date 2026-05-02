@@ -1,0 +1,23 @@
+<a href="{{ recipe.get_absolute_url }}" class="recipe-card">
+  <div class="card-img">
+    <img src="{{ recipe.image_display }}" alt="{{ recipe.title }}" loading="lazy">
+    {% if recipe.is_trending %}<span class="card-badge badge-trend">🔥 Trending</span>{% endif %}
+    {% if recipe.festival_tag %}<span class="card-badge badge-festival">🎉 {{ recipe.festival_tag }}</span>{% endif %}
+    <span class="card-badge badge-diet">{{ recipe.get_diet_type_display }}</span>
+  </div>
+  <div class="card-body">
+    <div class="card-meta">
+      <span class="recipe-meta"><i class="fas fa-clock"></i> {{ recipe.total_time }} min</span>
+      <span class="diff-badge diff-{{ recipe.difficulty }}">{{ recipe.get_difficulty_display }}</span>
+    </div>
+    <h3 class="recipe-title">{{ recipe.title }}</h3>
+    <p class="recipe-desc">{{ recipe.description|truncatechars:80 }}</p>
+    <div class="card-footer">
+      <span><i class="fas fa-users"></i> {{ recipe.servings }} servings</span>
+      {% if recipe.calories_per_serving %}<span><i class="fas fa-fire-alt"></i> {{ recipe.calories_per_serving }} kcal</span>{% endif %}
+    </div>
+    {% if recipe.state %}
+    <div class="card-state"><i class="fas fa-map-marker-alt"></i> {{ recipe.state.name }}{% if recipe.state.primary_language %} · {{ recipe.state.primary_language.native_name }}{% endif %}</div>
+    {% endif %}
+  </div>
+</a>

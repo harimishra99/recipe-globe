@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}{{ state.name }} Recipes — Swad{% endblock %}
+{% block content %}
+
+<div class="state-hero">
+  {% if state.banner_image_url %}
+  <img src="{{ state.banner_image_url }}" alt="{{ state.name }}">
+  {% else %}
+  <img src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1400&q=80" alt="{{ state.name }}">
+  {% endif %}
+  <div class="state-hero-ov">
+    <div class="container">
+      <span class="state-native">{{ state.native_name }}</span>
+      <h1 class="state-title">{{ state.name }}</h1>
+      <span class="state-region-tag">{{ state.get_region_display }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="container" style="padding-top:2rem;padding-bottom:4rem">
+
+  <!-- Language switcher -->
+  {% if state_langs %}
+  <div class="state-lang-bar">
+    <span class="label">🌐 View recipes in:</span>
+    <button class="lang-btn active" data-lang="en">English</button>
+    {% for lang in state_langs %}
+    <button class="lang-btn" data-lang="{{ lang.code }}">{{ lang.native_name }} ({{ lang.name }})</button>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Cuisine summary -->
+  {% if state.cuisine_summary %}
+  <div class="state-cuisine-summary">{{ state.cuisine_summary }}</div>
+  {% endif %}
+
+  <!-- Cuisines from this state -->
+  {% if cuisines %}
+  <div style="margin-bottom:2rem">
+    <h2 style="font-family:var(--fd);margin-bottom:1rem">Cuisines of {{ state.name }}</h2>
+    <div class="cuisine-grid">
+      {% for cuisine in cuisines %}
+      <a href="{% url 'cuisine_detail' cuisine.slug %}" class="cuisine-card">
+        <h4>{{ cuisine.name }}</h4>
+        <p>{{ cuisine.description|truncatechars:80 }}</p>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Recipes -->
+  <div class="sec-head" style="margin-top:2rem">
+    <h2 class="section-title">Recipes from {{ state.name }}</h2>
+    <span style="font-size:.875rem;color:var(--text-muted)">{{ recipes.count }} recipe{{ recipes.count|pluralize }}</span>
+  </div>
+  {% if recipes %}
+  <div class="recipe-grid">
+    {% for recipe in recipes %}{% include 'recipes/partials/recipe_card.html' %}{% endfor %}
+  </div>
+  {% else %}
+  <div class="empty"><span class="e-icon">🍛</span><h3>No recipes yet for {{ state.name }}</h3><p>Check back soon — we're adding more every day!</p></div>
+  {% endif %}
+</div>
+{% endblock %}

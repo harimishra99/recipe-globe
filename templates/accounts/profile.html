@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}My Profile — Swad{% endblock %}
+{% block content %}
+<div class="container profile-wrap">
+  <aside class="profile-side">
+    <img src="{{ profile.avatar_url }}" alt="Avatar" class="p-avatar">
+    <div class="p-name">{{ profile.display_name }}</div>
+    <div class="p-email">{{ user.email }}</div>
+    {% if profile.bio %}<p class="p-bio">{{ profile.bio }}</p>{% endif %}
+    <div class="p-tags">
+      {% if profile.state %}<span class="p-tag">📍 {{ profile.state.name }}</span>{% endif %}
+      {% if profile.preferred_language %}<span class="p-tag">🌐 {{ profile.preferred_language.name }}</span>{% endif %}
+    </div>
+    <a href="{% url 'edit_profile' %}" class="btn-edit">✏️ Edit Profile</a>
+  </aside>
+  <div>
+    <div class="sec-head"><h2 class="section-title">Recently Saved</h2><a href="{% url 'saved_recipes' %}" class="see-all">View all →</a></div>
+    {% if saved %}
+    <div class="recipe-grid">
+      {% for s in saved %}{% include 'recipes/partials/recipe_card.html' with recipe=s.recipe %}{% endfor %}
+    </div>
+    {% else %}
+    <div class="empty"><span class="e-icon">📌</span><h3>Nothing saved yet</h3><p>Browse recipes and tap "Save Recipe" to bookmark them here.</p><a href="{% url 'recipe_list' %}">Explore Recipes</a></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

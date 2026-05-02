@@ -1,0 +1,7 @@
+<a href="{{ recipe.get_absolute_url }}" class="recipe-card-sm">
+  <img src="{{ recipe.image_display }}" alt="{{ recipe.title }}" loading="lazy">
+  <div class="card-sm-body">
+    <h4>{{ recipe.title }}</h4>
+    <span><i class="fas fa-clock"></i> {{ recipe.total_time }} min</span>
+  </div>
+</a>

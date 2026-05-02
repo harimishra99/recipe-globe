@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}Explore Indian Recipes — Swad{% endblock %}
+{% block content %}
+<div class="container explore-wrap">
+  <div class="explore-head">
+    <h1>Explore Recipes</h1>
+    <p>Search across 28 states, 10+ cuisines and thousands of authentic Indian dishes.</p>
+  </div>
+  <div class="explore-layout">
+    <!-- Filters -->
+    <aside class="filters-panel">
+      <h3>🔍 Filter</h3>
+      <form method="GET">
+        <div class="f-group"><label>Search</label><input type="text" name="q" value="{{ q }}" placeholder="Dish name…"></div>
+        <div class="f-group">
+          <label>State</label>
+          <select name="state">
+            <option value="">All States</option>
+            {% for s in states %}<option value="{{ s.slug }}" {% if selected_state == s.slug %}selected{% endif %}>{{ s.name }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="f-group">
+          <label>Region</label>
+          <select name="region">
+            <option value="">All Regions</option>
+            {% for val, label in region_choices %}<option value="{{ val }}" {% if selected_region == val %}selected{% endif %}>{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="f-group">
+          <label>Cuisine</label>
+          <select name="cuisine">
+            <option value="">All Cuisines</option>
+            {% for c in cuisines %}<option value="{{ c.slug }}" {% if selected_cuisine == c.slug %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="f-group">
+          <label>Category</label>
+          <select name="category">
+            <option value="">All Categories</option>
+            {% for c in categories %}<option value="{{ c.slug }}" {% if selected_cat == c.slug %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="f-group">
+          <label>Diet</label>
+          <select name="diet">
+            <option value="">Any Diet</option>
+            {% for val, label in diet_choices %}<option value="{{ val }}" {% if selected_diet == val %}selected{% endif %}>{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="f-group">
+          <label>Difficulty</label>
+          <select name="difficulty">
+            <option value="">Any</option>
+            <option value="easy" {% if selected_difficulty == 'easy' %}selected{% endif %}>Easy</option>
+            <option value="medium" {% if selected_difficulty == 'medium' %}selected{% endif %}>Medium</option>
+            <option value="hard" {% if selected_difficulty == 'hard' %}selected{% endif %}>Hard</option>
+          </select>
+        </div>
+        <div class="f-group">
+          <label>Max Time</label>
+          <select name="max_time">
+            <option value="">Any</option>
+            <option value="5" {% if selected_max_time == '5' %}selected{% endif %}>Under 5 min</option>
+            <option value="15" {% if selected_max_time == '15' %}selected{% endif %}>Under 15 min</option>
+            <option value="30" {% if selected_max_time == '30' %}selected{% endif %}>Under 30 min</option>
+            <option value="60" {% if selected_max_time == '60' %}selected{% endif %}>Under 1 hour</option>
+          </select>
+        </div>
+        <button type="submit" class="filter-apply">Apply Filters</button>
+        <a href="{% url 'recipe_list' %}" class="filter-clear">Clear All</a>
+      </form>
+    </aside>
+    <!-- Results -->
+    <div>
+      <div class="results-label">{{ recipes.count }} recipe{{ recipes.count|pluralize }} found</div>
+      {% if recipes %}
+      <div class="recipe-grid">
+        {% for recipe in recipes %}{% include 'recipes/partials/recipe_card.html' %}{% endfor %}
+      </div>
+      {% else %}
+      <div class="empty"><span class="e-icon">🍽️</span><h3>No recipes found</h3><p>Try different filters or search terms.</p><a href="{% url 'recipe_list' %}">Browse all recipes</a></div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

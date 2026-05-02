@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}{{ category.name }} — Swad{% endblock %}
+{% block content %}
+<div class="container" style="padding-top:calc(var(--nav-h) + 2rem);padding-bottom:4rem">
+  <div style="text-align:center;margin-bottom:2.5rem">
+    <span style="font-size:3rem">{{ category.emoji }}</span>
+    <h1 style="font-family:var(--fd);font-size:2.25rem;margin-top:.5rem">{{ category.name }}</h1>
+    {% if category.description %}<p style="color:var(--text-muted);margin-top:.5rem">{{ category.description }}</p>{% endif %}
+  </div>
+  {% if recipes %}
+  <div class="recipe-grid">
+    {% for recipe in recipes %}{% include 'recipes/partials/recipe_card.html' %}{% endfor %}
+  </div>
+  {% else %}
+  <div class="empty"><span class="e-icon">{{ category.emoji }}</span><h3>No recipes in this category yet.</h3></div>
+  {% endif %}
+</div>
+{% endblock %}

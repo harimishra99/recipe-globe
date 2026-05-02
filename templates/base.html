@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Swad — India's Recipe Hub{% endblock %}</title>
+  <meta name="description" content="{% block meta_desc %}Authentic Indian recipes from all 28 states, in your regional language.{% endblock %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="{% url 'home' %}" class="nav-logo">
+      <span class="logo-mark">🍛</span>
+      <div>
+        <span class="logo-text">S<em>wad</em></span>
+        <span class="logo-sub">India's Recipe Hub</span>
+      </div>
+    </a>
+
+    <form class="nav-search" action="{% url 'recipe_list' %}" method="GET">
+      <input type="text" name="q" placeholder="Search dal makhani, biryani…" value="{{ request.GET.q }}">
+      <button type="submit"><i class="fas fa-search"></i></button>
+    </form>
+
+    <div class="nav-links" id="navLinks">
+      <a href="{% url 'recipe_list' %}" class="nav-link"><i class="fas fa-compass"></i> Explore</a>
+
+      <div class="nav-drop">
+        <a class="nav-link" href="#">States <i class="fas fa-chevron-down fa-xs"></i></a>
+        <div class="drop-menu">
+          <span class="drop-section">North</span>
+          {% for s in nav_states %}{% if s.region == 'north' %}
+          <a href="{% url 'state_detail' s.slug %}">{{ s.name }} <small style="color:#aaa;font-size:.7rem">{{ s.primary_language.native_name }}</small></a>
+          {% endif %}{% endfor %}
+          <span class="drop-section">South</span>
+          {% for s in nav_states %}{% if s.region == 'south' %}
+          <a href="{% url 'state_detail' s.slug %}">{{ s.name }}</a>
+          {% endif %}{% endfor %}
+          <span class="drop-section">East / West / Central</span>
+          {% for s in nav_states %}{% if s.region == 'east' or s.region == 'west' or s.region == 'central' %}
+          <a href="{% url 'state_detail' s.slug %}">{{ s.name }}</a>
+          {% endif %}{% endfor %}
+          <span class="drop-section">Northeast</span>
+          {% for s in nav_states %}{% if s.region == 'northeast' %}
+          <a href="{% url 'state_detail' s.slug %}">{{ s.name }}</a>
+          {% endif %}{% endfor %}
+        </div>
+      </div>
+
+      <div class="nav-drop">
+        <a class="nav-link" href="#">Cuisines <i class="fas fa-chevron-down fa-xs"></i></a>
+        <div class="drop-menu">
+          {% for c in nav_cuisines %}
+          <a href="{% url 'cuisine_detail' c.slug %}">{{ c.name }}</a>
+          {% endfor %}
+        </div>
+      </div>
+
+      {% if user.is_authenticated %}
+        <a href="{% url 'saved_recipes' %}" class="nav-link" title="Saved"><i class="fas fa-bookmark"></i></a>
+        <div class="nav-drop">
+          <a class="nav-link avatar-trigger" href="#"><img src="{{ user.profile.avatar_url }}" class="nav-avatar" alt="Avatar"></a>
+          <div class="drop-menu right">
+            <a href="{% url 'profile' %}"><i class="fas fa-user fa-fw"></i> My Profile</a>
+            <a href="{% url 'edit_profile' %}"><i class="fas fa-cog fa-fw"></i> Settings</a>
+            {% if user.is_staff %}<a href="{% url 'admin:index' %}"><i class="fas fa-shield-alt fa-fw"></i> Admin</a>{% endif %}
+            <hr>
+            <a href="{% url 'account_logout' %}"><i class="fas fa-sign-out-alt fa-fw"></i> Sign Out</a>
+          </div>
+        </div>
+      {% else %}
+        <a href="{% url 'account_login' %}" class="nav-link">Sign In</a>
+        <a href="{% url 'account_signup' %}" class="btn-join">Get Started</a>
+      {% endif %}
+    </div>
+
+    <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile search -->
+<div class="mobile-search">
+  <form action="{% url 'recipe_list' %}" method="GET">
+    <input type="text" name="q" placeholder="Search recipes…" value="{{ request.GET.q }}">
+    <button type="submit"><i class="fas fa-search"></i></button>
+  </form>
+</div>
+
+<!-- Alerts -->
+{% if messages %}
+<div class="alerts-wrap">
+  {% for msg in messages %}
+  <div class="alert-pill alert-{{ msg.tags }}">
+    {{ msg }}
+    <button class="alert-close" onclick="this.parentElement.remove()">×</button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<main>{% block content %}{% endblock %}</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span style="font-size:1.8rem">🍛</span>
+      <span style="font-family:var(--fd);font-size:1.3rem;font-weight:700;margin-left:.4rem">Swad</span>
+      <p>Authentic recipes from every corner of India, in your regional language.</p>
+      <p style="margin-top:.5rem;opacity:.5;font-size:.78rem">Built with ❤️ by Developers Infotech Pvt. Ltd.</p>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>Explore</h4>
+        {% for cat in nav_categories|slice:":5" %}
+        <a href="{% url 'category_detail' cat.slug %}">{{ cat.emoji }} {{ cat.name }}</a>
+        {% endfor %}
+      </div>
+      <div class="footer-col">
+        <h4>States</h4>
+        {% for s in nav_states|slice:":6" %}
+        <a href="{% url 'state_detail' s.slug %}">{{ s.name }}</a>
+        {% endfor %}
+      </div>
+      <div class="footer-col">
+        <h4>Account</h4>
+        {% if user.is_authenticated %}
+        <a href="{% url 'profile' %}">My Profile</a>
+        <a href="{% url 'saved_recipes' %}">Saved Recipes</a>
+        <a href="{% url 'account_logout' %}">Sign Out</a>
+        {% else %}
+        <a href="{% url 'account_login' %}">Sign In</a>
+        <a href="{% url 'account_signup' %}">Create Account</a>
+        {% endif %}
+        {% if user.is_staff %}<a href="{% url 'admin:index' %}">Admin Panel</a>{% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2024 Swad. All rights reserved.</span>
+    <span>Made in 🇮🇳 India</span>
+  </div>
+</footer>
+
+<!-- Bottom nav (mobile) -->
+<nav class="bottom-nav">
+  <a href="{% url 'home' %}" class="bnav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+    <i class="fas fa-home"></i><span>Home</span>
+  </a>
+  <a href="{% url 'recipe_list' %}" class="bnav-item {% if request.resolver_match.url_name == 'recipe_list' %}active{% endif %}">
+    <i class="fas fa-search"></i><span>Explore</span>
+  </a>
+  {% if user.is_authenticated %}
+  <a href="{% url 'saved_recipes' %}" class="bnav-item {% if request.resolver_match.url_name == 'saved_recipes' %}active{% endif %}">
+    <i class="fas fa-bookmark"></i><span>Saved</span>
+  </a>
+  <a href="{% url 'profile' %}" class="bnav-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+    <i class="fas fa-user"></i><span>Profile</span>
+  </a>
+  {% else %}
+  <a href="{% url 'account_login' %}" class="bnav-item">
+    <i class="fas fa-sign-in-alt"></i><span>Sign In</span>
+  </a>
+  <a href="{% url 'account_signup' %}" class="bnav-item">
+    <i class="fas fa-user-plus"></i><span>Join</span>
+  </a>
+  {% endif %}
+</nav>
+
+{% load static %}
+<script src="{% static 'js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

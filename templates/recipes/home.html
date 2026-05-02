@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Swad — Authentic Indian Recipes in Your Language{% endblock %}
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <span class="hero-eyebrow">🇮🇳 28 States · 16 Languages · 1000s of Recipes</span>
+    <h1 class="hero-title">
+      Every <em>Flavour</em> of<br>
+      <span class="hl">Incredible India</span>
+    </h1>
+    <p class="hero-sub">From Kerala's coconut curries to Punjab's tandoor feasts — discover authentic recipes from every Indian state in your own language.</p>
+    <form class="hero-form" action="{% url 'recipe_list' %}" method="GET">
+      <input type="text" name="q" placeholder="Try 'Butter Chicken', 'Masala Dosa', 'Biryani'…">
+      <button type="submit"><i class="fas fa-search"></i> Search</button>
+    </form>
+    <div class="hero-chips">
+      {% for cat in categories|slice:":7" %}
+      <a href="{% url 'category_detail' cat.slug %}" class="hero-chip">{{ cat.emoji }} {{ cat.name }}</a>
+      {% endfor %}
+    </div>
+  </div>
+  <!-- Floating recipe cards desktop -->
+  <div class="hero-floats">
+    {% for r in featured|slice:":3" %}
+    <a href="{{ r.get_absolute_url }}" class="hero-float" style="--i:{{ forloop.counter }}">
+      <img src="{{ r.image_display }}" alt="{{ r.title }}">
+      <div class="hero-float-label">{{ r.title|truncatechars:28 }}</div>
+      <div class="hero-float-time" style="padding:0 .75rem .5rem"><i class="fas fa-clock"></i> {{ r.total_time }} min</div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="section">
+  <div class="container">
+    <div class="sec-head"><h2 class="section-title">What's on your mind?</h2></div>
+    <div class="cat-scroll">
+      {% for cat in categories %}
+      <a href="{% url 'category_detail' cat.slug %}" class="cat-pill" style="--c:{{ cat.color }}">
+        <span class="emoji">{{ cat.emoji }}</span>{{ cat.name }}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- TRENDING -->
+{% if trending %}
+<section class="section section-dark">
+  <div class="container">
+    <div class="sec-head">
+      <h2 class="section-title">🔥 Trending Right Now</h2>
+      <a href="{% url 'recipe_list' %}" class="see-all" style="color:var(--turmeric)">See all →</a>
+    </div>
+    <div class="recipe-grid">
+      {% for recipe in trending %}{% include 'recipes/partials/recipe_card.html' %}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- USER'S STATE RECIPES -->
+{% if local_recipes and user_state %}
+<section class="section section-alt">
+  <div class="container">
+    <div class="sec-head">
+      <h2 class="section-title">From Your State — {{ user_state.name }}</h2>
+      <a href="{% url 'state_detail' user_state.slug %}" class="see-all">See all →</a>
+    </div>
+    <div class="recipe-grid">
+      {% for recipe in local_recipes %}{% include 'recipes/partials/recipe_card.html' %}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- QUICK 5 MIN -->
+{% if quick5 %}
+<section class="section">
+  <div class="container">
+    <div class="sec-head">
+      <h2 class="section-title">⚡ Done in Under 5 Minutes</h2>
+      <a href="{% url 'recipe_list' %}?max_time=5" class="see-all">See all →</a>
+    </div>
+    <div class="recipe-scroll">
+      {% for recipe in quick5 %}{% include 'recipes/partials/recipe_card_sm.html' %}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- QUICK 30 MIN -->
+{% if quick30 %}
+<section class="section section-alt">
+  <div class="container">
+    <div class="sec-head">
+      <h2 class="section-title">⏱️ Ready in 30 Minutes</h2>
+      <a href="{% url 'recipe_list' %}?max_time=30" class="see-all">See all →</a>
+    </div>
+    <div class="recipe-grid">
+      {% for recipe in quick30 %}{% include 'recipes/partials/recipe_card.html' %}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- CUISINES -->
+{% if cuisines %}
+<section class="section">
+  <div class="container">
+    <div class="sec-head"><h2 class="section-title">🍽️ Explore Cuisines</h2></div>
+    <div class="cuisine-grid">
+      {% for cuisine in cuisines %}
+      <a href="{% url 'cuisine_detail' cuisine.slug %}" class="cuisine-card">
+        <h4>{{ cuisine.name }}</h4>
+        <p>{{ cuisine.description|truncatechars:70 }}</p>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- STATE EXPLORER -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="sec-head"><h2 class="section-title">🗺️ Explore by State</h2></div>
+    <!-- Region tabs -->
+    <div class="region-tabs">
+      <button class="region-tab active" data-region="north">North India</button>
+      <button class="region-tab" data-region="south">South India</button>
+      <button class="region-tab" data-region="east">East India</button>
+      <button class="region-tab" data-region="west">West India</button>
+      <button class="region-tab" data-region="central">Central India</button>
+      <button class="region-tab" data-region="northeast">Northeast</button>
+      <button class="region-tab" data-region="union">Union Territories</button>
+    </div>
+    {% for region_key, region_states in region_states.items %}
+    <div class="region-panel states-grid" data-region="{{ region_key }}" {% if not forloop.first %}style="display:none"{% endif %}>
+      {% for state in region_states %}
+      <a href="{% url 'state_detail' state.slug %}" class="state-card">
+        <span class="s-native">{{ state.native_name }}</span>
+        <span class="s-name">{{ state.name }}</span>
+        {% if state.primary_language %}<span class="s-lang">{{ state.primary_language.name }}</span>{% endif %}
+      </a>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- FESTIVAL RECIPES -->
+{% if festival %}
+<section class="section">
+  <div class="container">
+    <div class="sec-head">
+      <h2 class="section-title">🎉 Festival Specials</h2>
+      <a href="{% url 'recipe_list' %}" class="see-all">See all →</a>
+    </div>
+    <div class="recipe-scroll">
+      {% for recipe in festival %}{% include 'recipes/partials/recipe_card_sm.html' %}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- CTA -->
+{% if not user.is_authenticated %}
+<section class="section section-saffron">
+  <div class="cta-band">
+    <h2>Join Swad Today — It's Free</h2>
+    <p>Save your favourite recipes, switch to your regional language, and get a personalised feed from your own state.</p>
+    <div class="cta-btns">
+      <a href="{% url 'account_signup' %}" class="btn-cta-w">Create Free Account</a>
+      <a href="{% url 'account_login' %}" class="btn-cta-o">Sign In</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}

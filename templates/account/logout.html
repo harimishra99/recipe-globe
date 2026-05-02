@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Signed Out — Swad{% endblock %}
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card" style="text-align:center">
+    <div class="auth-logo">👋</div>
+    <h1>See you soon!</h1>
+    <p class="auth-sub" style="margin-bottom:1.5rem">You've been signed out successfully.</p>
+    <a href="{% url 'home' %}" class="btn-auth" style="display:inline-block;text-decoration:none;padding:.8rem 2rem">Back to Home</a>
+    <p style="margin-top:1rem"><a href="{% url 'account_login' %}" style="color:var(--saffron)">Sign in again</a></p>
+  </div>
+</div>
+{% endblock %}
