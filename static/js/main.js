@@ -1,11 +1,10 @@
 // ============================================================
 //  SWAD — Main JavaScript
+//  No hamburger on mobile — bottom nav handles navigation.
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', () => {
   initNavbar();
-  initHamburger();
-  initDropdowns();
   initIngredientChecks();
   initScrollAnimations();
   initRegionTabs();
@@ -21,64 +20,6 @@ function initNavbar() {
   update();
 }
 
-// ── Hamburger — full screen mobile menu ──────────────────────
-function initHamburger() {
-  const btn   = document.getElementById('hamburger');
-  const links = document.getElementById('navLinks');
-  if (!btn || !links) return;
-
-  function openMenu() {
-    links.classList.add('open');
-    btn.classList.add('open');
-    btn.setAttribute('aria-expanded', 'true');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeMenu() {
-    links.classList.remove('open');
-    btn.classList.remove('open');
-    btn.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
-  }
-
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    links.classList.contains('open') ? closeMenu() : openMenu();
-  });
-
-  // Close when any nav link (non-dropdown) is clicked
-  links.querySelectorAll('a:not(.nav-drop a)').forEach(a => {
-    a.addEventListener('click', () => closeMenu());
-  });
-
-  // Close on outside tap
-  document.addEventListener('click', (e) => {
-    if (!btn.contains(e.target) && !links.contains(e.target)) {
-      closeMenu();
-    }
-  });
-
-  // Close on Escape key
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeMenu();
-  });
-}
-
-// ── Mobile dropdown toggles ───────────────────────────────────
-function initDropdowns() {
-  document.querySelectorAll('.nav-drop > .nav-link').forEach(trigger => {
-    trigger.addEventListener('click', (e) => {
-      if (window.innerWidth > 768) return;
-      e.preventDefault();
-      e.stopPropagation();
-      const drop    = trigger.closest('.nav-drop');
-      const wasOpen = drop.classList.contains('open');
-      document.querySelectorAll('.nav-drop').forEach(d => d.classList.remove('open'));
-      if (!wasOpen) drop.classList.add('open');
-    });
-  });
-}
-
 // ── Ingredient checkbox persistence ──────────────────────────
 function initIngredientChecks() {
   document.querySelectorAll('.ing-row input[type=checkbox]').forEach((cb, i) => {
@@ -92,16 +33,14 @@ function initIngredientChecks() {
 // ── Scroll-triggered fade-in animations ──────────────────────
 function initScrollAnimations() {
   if (!('IntersectionObserver' in window)) return;
-
   const items = document.querySelectorAll(
     '.recipe-card, .state-card, .cat-pill, .cuisine-card'
   );
-
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) {
-        e.target.style.opacity    = '1';
-        e.target.style.transform  = 'translateY(0)';
+        e.target.style.opacity   = '1';
+        e.target.style.transform = 'translateY(0)';
         io.unobserve(e.target);
       }
     });
@@ -120,7 +59,6 @@ function initRegionTabs() {
   const tabs   = document.querySelectorAll('.region-tab');
   const panels = document.querySelectorAll('.region-panel');
   if (!tabs.length) return;
-
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
       const region = tab.dataset.region;
@@ -155,11 +93,9 @@ function getCookie(name) {
 
 // ── Language switcher (recipe detail) ────────────────────────
 async function switchLang(langCode, slug) {
-  // Highlight active button immediately
   document.querySelectorAll('.lang-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.lang === langCode));
 
-  // Remove previous notice if any
   document.getElementById('lang-notice')?.remove();
 
   try {
@@ -171,20 +107,11 @@ async function switchLang(langCode, slug) {
     if (titleEl) titleEl.textContent = data.title;
     if (descEl)  descEl.textContent  = data.description;
 
-    // Show yellow notice when no translation exists yet
     if (!data.found && langCode !== 'en') {
-      const notice       = document.createElement('div');
-      notice.id          = 'lang-notice';
-      notice.style.cssText = [
-        'background:#FFF8E6',
-        'border-left:3px solid #F5A623',
-        'padding:.6rem 1rem',
-        'border-radius:0 8px 8px 0',
-        'font-size:.82rem',
-        'color:#7A6010',
-        'margin-top:.75rem',
-      ].join(';');
-      notice.textContent = '⚠️ Translation not available yet for this language. Showing original English.';
+      const notice         = document.createElement('div');
+      notice.id            = 'lang-notice';
+      notice.style.cssText = 'background:#FFF8E6;border-left:3px solid #F5A623;padding:.6rem 1rem;border-radius:0 8px 8px 0;font-size:.82rem;color:#7A6010;margin-top:.75rem;';
+      notice.textContent   = '⚠️ Translation not available yet. Showing original English.';
       if (descEl) descEl.parentElement?.insertBefore(notice, descEl);
     }
   } catch (e) {
@@ -192,7 +119,7 @@ async function switchLang(langCode, slug) {
   }
 }
 
-// ── Save / Bookmark recipe ────────────────────────────────────
+// ── Save / Bookmark ───────────────────────────────────────────
 async function toggleSave(slug, btn) {
   try {
     const res  = await fetch(`/recipes/${slug}/save/`, {
@@ -231,27 +158,19 @@ async function submitRating(val, slug) {
   }
 }
 
-// ── Copy link to clipboard ────────────────────────────────────
+// ── Copy link ─────────────────────────────────────────────────
 function copyLink(url) {
   navigator.clipboard.writeText(url)
-    .then(() => showToast('🔗 Link copied to clipboard!'))
+    .then(() => showToast('🔗 Link copied!'))
     .catch(() => showToast('Could not copy link.'));
 }
 
 // ── Toast notification ────────────────────────────────────────
 function showToast(msg) {
-  const t = document.createElement('div');
-  t.className    = 'alert-pill alert-success';
-  t.style.cssText = [
-    'position:fixed',
-    'bottom:5.5rem',
-    'left:50%',
-    'transform:translateX(-50%)',
-    'z-index:9999',
-    'white-space:nowrap',
-    'pointer-events:none',
-  ].join(';');
-  t.textContent = msg;
+  const t          = document.createElement('div');
+  t.className      = 'alert-pill alert-success';
+  t.style.cssText  = 'position:fixed;bottom:5.5rem;left:50%;transform:translateX(-50%);z-index:9999;white-space:nowrap;pointer-events:none;';
+  t.textContent    = msg;
   document.body.appendChild(t);
   setTimeout(() => {
     t.style.transition = 'opacity .35s';
