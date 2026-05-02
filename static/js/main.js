@@ -66,15 +66,13 @@ function initHamburger() {
 
 // ── Mobile dropdown toggles ───────────────────────────────────
 function initDropdowns() {
-  // Only run toggle behaviour on mobile
-  if (window.innerWidth > 768) return;
-
   document.querySelectorAll('.nav-drop > .nav-link').forEach(trigger => {
     trigger.addEventListener('click', (e) => {
+      if (window.innerWidth > 768) return;
       e.preventDefault();
-      const drop = trigger.closest('.nav-drop');
+      e.stopPropagation();
+      const drop    = trigger.closest('.nav-drop');
       const wasOpen = drop.classList.contains('open');
-      // close all others
       document.querySelectorAll('.nav-drop').forEach(d => d.classList.remove('open'));
       if (!wasOpen) drop.classList.add('open');
     });
