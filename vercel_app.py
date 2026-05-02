@@ -12,4 +12,4 @@ django.setup()
 
 # Import and wrap the handler explicitly
 from django.core.handlers.wsgi import WSGIHandler
-app = WSGIHandler()
+app = WSGIHandler()# force redeploy
