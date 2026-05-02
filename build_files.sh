@@ -1,4 +1,6 @@
 #!/bin/bash
 set -e
-pip install -r requirements.txt
+
+pip install --break-system-packages -r requirements.txt
+
 python manage.py collectstatic --noinput
