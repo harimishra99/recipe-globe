@@ -78,6 +78,23 @@ input, select, textarea { font-family: inherit; }
   min-width: 200px; padding: .4rem 0;
   opacity: 0; visibility: hidden; transform: translateY(-6px);
   transition: all .2s var(--ease); z-index: 300;
+  max-height: 70vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.drop-menu::-webkit-scrollbar {
+  width: 4px;
+}
+
+.drop-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.drop-menu::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
 }
 .drop-menu.right { left: auto; right: 0; }
 .nav-drop:hover .drop-menu { opacity: 1; visibility: visible; transform: none; }
