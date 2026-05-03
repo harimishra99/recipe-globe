@@ -32,23 +32,38 @@
   <div class="container detail-container">
     <div class="detail-layout">
 
-      <!-- MAIN -->
+      <!-- MAIN CONTENT -->
       <div class="detail-main">
 
-        <!-- Language Switcher -->
-        {% if state_langs %}
+        <!-- Language Switcher Dropdown -->
         <div class="lang-switcher-box">
           <div class="slabel">🌐 View this recipe in:</div>
-          <div class="lang-chips">
-            <button class="lang-btn active" data-lang="en" onclick="switchLang('en','{{ recipe.slug }}')">English</button>
-            {% for lang in state_langs %}
-            <button class="lang-btn" data-lang="{{ lang.code }}" onclick="switchLang('{{ lang.code }}','{{ recipe.slug }}')">
-              {{ lang.native_name }} ({{ lang.name }})
+          <div class="lang-select-wrap">
+            <button class="lang-selected-btn" id="langSelectedBtn" onclick="toggleLangDropdown()">
+              <span id="langSelectedText">🇬🇧 English</span>
+              <i class="fas fa-chevron-down" id="langChevron"></i>
             </button>
-            {% endfor %}
+            <div class="lang-dropdown" id="langDropdown">
+              <button class="lang-option active"
+                      data-lang="en"
+                      onclick="switchLangDropdown('en', '🇬🇧 English', '{{ recipe.slug }}')">
+                🇬🇧 English
+              </button>
+              {% for lang in all_langs %}
+              <button class="lang-option"
+                      data-lang="{{ lang.code }}"
+                      onclick="switchLangDropdown('{{ lang.code }}', '{{ lang.native_name }} ({{ lang.name }})', '{{ recipe.slug }}')">
+                {{ lang.native_name }} ({{ lang.name }})
+              </button>
+              {% endfor %}
+            </div>
           </div>
         </div>
-        {% endif %}
+
+        <!-- Translation notice -->
+        <div id="lang-notice" style="display:none;background:#FFF8E6;border-left:3px solid #F5A623;padding:.6rem 1rem;border-radius:0 8px 8px 0;font-size:.82rem;color:#7A6010;margin-bottom:1rem;">
+          ⚠️ Translation not available yet for this language. Showing original English.
+        </div>
 
         <!-- Description -->
         <p class="recipe-body-desc" id="recipeDesc">
@@ -122,7 +137,7 @@
 
         <!-- Save Button -->
         {% if user.is_authenticated %}
-        <button class="save-recipe-btn {% if is_saved %}saved{% endif %}" id="saveBtn"
+        <button class="save-recipe-btn {% if is_saved %}saved{% endif %}"
                 onclick="toggleSave('{{ recipe.slug }}', this)">
           <i class="fas fa-bookmark"></i>
           <span class="save-label">{% if is_saved %}✓ Saved{% else %}Save Recipe{% endif %}</span>
@@ -171,4 +186,66 @@
     </div>
   </div>
 </article>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ── Dropdown toggle ───────────────────────────────────────────
+function toggleLangDropdown() {
+  const dropdown = document.getElementById('langDropdown');
+  const chevron  = document.getElementById('langChevron');
+  const isOpen   = dropdown.classList.toggle('open');
+  chevron.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+  const wrap = document.querySelector('.lang-select-wrap');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('langDropdown')?.classList.remove('open');
+    const chevron = document.getElementById('langChevron');
+    if (chevron) chevron.style.transform = 'rotate(0deg)';
+  }
+});
+
+// ── Switch language ───────────────────────────────────────────
+async function switchLangDropdown(langCode, labelText, slug) {
+  // Update selected button text
+  document.getElementById('langSelectedText').textContent = labelText;
+
+  // Mark active option
+  document.querySelectorAll('.lang-option').forEach(b =>
+    b.classList.toggle('active', b.dataset.lang === langCode));
+
+  // Close dropdown
+  document.getElementById('langDropdown').classList.remove('open');
+  document.getElementById('langChevron').style.transform = 'rotate(0deg)';
+
+  // Hide old notice
+  const notice = document.getElementById('lang-notice');
+  notice.style.display = 'none';
+
+  // English = just restore original
+  if (langCode === 'en') {
+    document.getElementById('recipeTitle').textContent = '{{ recipe.title|escapejs }}';
+    document.getElementById('recipeDesc').textContent  = '{{ recipe.description|escapejs }}';
+    return;
+  }
+
+  try {
+    const res  = await fetch(`/recipes/${slug}/translation/?lang=${langCode}`);
+    const data = await res.json();
+
+    document.getElementById('recipeTitle').textContent = data.title;
+    document.getElementById('recipeDesc').textContent  = data.description;
+
+    if (!data.found) {
+      notice.style.display = 'block';
+    }
+  } catch(e) {
+    console.error('Translation fetch failed:', e);
+    notice.style.display = 'block';
+  }
+}
+</script>
 {% endblock %}

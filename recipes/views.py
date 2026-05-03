@@ -76,7 +76,7 @@ def recipe_detail(request, slug):
         is_published=True, state=recipe.state
     ).exclude(id=recipe.id).order_by('-view_count')[:4]
 
-    all_langs = RegionalLanguage.objects.filter(is_active=True)
+    all_langs = RegionalLanguage.objects.filter(is_active=True).exclude(code='en').order_by('name')
 
     return render(request, 'recipes/recipe_detail.html', {
         'recipe': recipe, 'translation': translation,
